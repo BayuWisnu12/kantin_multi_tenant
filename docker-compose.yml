@@ -1,0 +1,21 @@
+services:
+  mariadb:
+    image: mariadb:11.4
+    # ... (konfigurasi port, environment, volume lainnya) ...
+    healthcheck:
+      # Mencoba ping ke dalam MariaDB. Jika gagal, return exit 1
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root --password=$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s       # Jeda waktu antar pengecekan
+      timeout: 5s         # Batas waktu maksimal menunggu balasan
+      retries: 5          # Jumlah percobaan gagal sebelum dianggap 'unhealthy'
+      start_period: 15s   # Waktu tunggu awal saat kontainer baru dinyalakan
+
+  redis:
+    image: redis:alpine
+    # ... (konfigurasi port, volume lainnya) ...
+    healthcheck:
+      # Mencoba mengirim perintah ping. Redis yang sehat akan membalas PONG
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
